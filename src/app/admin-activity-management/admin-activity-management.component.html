@@ -1,1 +1,85 @@
-<p>admin-activity-management works!</p>
+<!-- Lista de Actividades -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let activity of activities" class="card p-4 shadow-lg bg-white rounded-lg">
+      <h3 class="text-lg font-semibold">{{ activity.activityName }}</h3>
+      <p class="text-sm text-gray-600">{{ activity.description }}</p>
+      <p class="text-xs text-gray-500">Tipo de Actividad: {{ activity.activityTypeName }}</p>
+      <p class="text-xs text-gray-500">Estado: {{ activity.activityStatusName }}</p>
+      <p class="text-xs text-gray-500">Prioridad: {{ activity.priorityLevel }}</p>
+      <p class="text-xs text-gray-500">Fecha de Creación: {{ activity.createdAt | date }}</p>
+  
+      <!-- CRUD Icons -->
+      <div class="flex justify-end space-x-2 mt-4">
+        <button class="text-blue-500" (click)="editActivity(activity)">
+          <i class="fas fa-edit"></i> Editar
+        </button>
+        <button class="text-red-500" (click)="confirmDeleteActivity(activity)">
+          <i class="fas fa-trash-alt"></i> Eliminar
+        </button>
+        <button class="text-green-500" (click)="updateStatus(activity)">
+            <i class="fas fa-sync"></i> Actualizar Estado
+          </button>
+      </div>
+    </div>
+  </div>
+  
+<!-- Popup de Edición (Actualizar Detalles) -->
+<div *ngIf="isEditPopupVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <h2 class="text-xl font-semibold mb-4">Editar Actividad</h2>
+      <form (ngSubmit)="updateActivityDetails()">
+        <div class="mb-4">
+          <label for="activityName" class="block text-gray-700">Nombre de la Actividad</label>
+          <input id="activityName" [(ngModel)]="selectedActivity.activityName" name="activityName"
+            class="w-full p-2 border rounded">
+        </div>
+        <div class="mb-4">
+          <label for="description" class="block text-gray-700">Descripción</label>
+          <input id="description" [(ngModel)]="selectedActivity.description" name="description"
+            class="w-full p-2 border rounded">
+        </div>
+        <!-- Campos adicionales como tipo, prioridad, etc., pueden ir aquí -->
+        <div class="flex justify-end">
+          <button type="button" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2" (click)="closeEditPopup()">Cancelar</button>
+          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Actualizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Popup de Actualización de Estado -->
+<div *ngIf="isUpdateStatusPopupVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <h2 class="text-xl font-semibold mb-4">Actualizar Estado de la Actividad</h2>
+      <form (ngSubmit)="updateActivityStatus()">
+        <div class="mb-4">
+          <label for="status" class="block text-gray-700">Nuevo Estado</label>
+          <select id="status" [(ngModel)]="statusUpdate.status_id" name="status_id" class="w-full p-2 border rounded">
+            <option *ngFor="let status of statuses" [value]="status.statusId">{{ status.statusName }}</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label for="change_comment" class="block text-gray-700">Comentario</label>
+          <textarea id="change_comment" [(ngModel)]="statusUpdate.change_comment" name="change_comment"
+            class="w-full p-2 border rounded"></textarea>
+        </div>
+        <div class="flex justify-end">
+          <button type="button" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2" (click)="closeUpdateStatusPopup()">Cancelar</button>
+          <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Actualizar Estado</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Popup de Confirmación para Eliminar -->
+  <div *ngIf="isDeletePopupVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <h2 class="text-xl font-semibold mb-4">Eliminar Actividad</h2>
+      <p>¿Estás seguro de que deseas eliminar esta actividad?</p>
+      <div class="flex justify-end mt-4">
+        <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2" (click)="closeDeletePopup()">Cancelar</button>
+        <button class="bg-red-500 text-white px-4 py-2 rounded" (click)="deleteActivity()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+  

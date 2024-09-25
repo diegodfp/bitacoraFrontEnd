@@ -15,6 +15,6 @@ if (environment.production) {
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(HttpClientModule), // Importa HttpClientModule aquí
-    provideRouter(routes), provideAnimationsAsync(),
+    provideRouter(routes), provideAnimationsAsync(), provideAnimationsAsync(),
   ],
 }).catch(err => console.error(err));

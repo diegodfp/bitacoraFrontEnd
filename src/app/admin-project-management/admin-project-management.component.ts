@@ -4,6 +4,11 @@ import { ProjectDTO } from '../models/project.model'; // Define tu modelo para l
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';  // Importa CommonModule para usar el pipe 'date'
 import { FormsModule } from '@angular/forms'; 
+import { DepartmentService } from '../services/department.service';
+import { UserService } from '../services/user.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';  
 @Component({
   selector: 'app-admin-project-management',
   standalone: true,
@@ -20,10 +25,17 @@ export class AdminProjectManagementComponent implements OnInit {
   isDeletePopupVisible = false; // Control para mostrar el popup de eliminación
   isAssignUserPopupVisible = false; // Control para mostrar el popup de asignación de usuarios
 
-  constructor(private http: HttpClient, private router: Router) {}
+  // LISTAS PARA ASIGNAR USUARIOS A PROYECTO
+  departments: any[] = [];  // Lista de departamentos
+  users: any[] = [];  // Lista de usuarios filtrados por departamento
+  selectedDepartmentId: number | null = null;  // Departamento seleccionado
+
+  constructor(private http: HttpClient, private router: Router, private departmentService: DepartmentService, 
+    private userService: UserService , private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.getProjects();  // Cargar los proyectos cuando se inicialice el componente
+    this.getDepartments();
   }
 
   // Método para obtener todos los proyectos
@@ -98,14 +110,39 @@ export class AdminProjectManagementComponent implements OnInit {
     this.isAssignUserPopupVisible = false;
   }
 
-  // Método para asignar usuario al proyecto
   assignUserToProject(): void {
     this.http.post('http://localhost:8080/api/project-assignments/assign', this.assignment)
+      .pipe(
+        catchError((error) => {
+          let message = 'Ocurrió un error inesperado.';
+          if (error.status === 500 && error.error.message.includes('El usuario ya está asignado a este proyecto')) {
+            message = 'Error, El usuario ya está asignado a este proyecto.';
+          }
+          this.snackBar.open(message, 'Cerrar', {
+            duration: 3000
+          });
+          return throwError(() => new Error(error));
+        })
+      )
       .subscribe(() => {
-        this.getProjects();  // Actualiza la lista de proyectos después de la asignación
-        this.closeAssignUserPopup();  // Cierra el popup de asignación de usuarios
-      }, error => {
-        console.error('Error al asignar el usuario al proyecto', error);
+        this.getProjects();
+        this.closeAssignUserPopup();
       });
+  }
+
+   // Obtener la lista de departamentos
+   getDepartments(): void {
+    this.departmentService.getDepartments().subscribe(departments => {
+      this.departments = departments;
+    });
+  }
+
+  // Cuando se selecciona un departamento, obtener los usuarios
+  onDepartmentSelect(): void {
+    if (this.selectedDepartmentId) {
+      this.userService.getUsersByDepartment(this.selectedDepartmentId).subscribe(users => {
+        this.users = users;
+      });
+    }
   }
 }
