@@ -1,0 +1,26 @@
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <form [formGroup]="loginForm" class="space-y-6">
+      <h2 class="text-center text-2xl font-bold">Iniciar Sesión</h2>
+      <p class="text-red-600">{{ loginError }}</p>
+
+      <div>
+        <label for="username" class="block text-sm font-medium">Username</label>
+        <input formControlName="username" type="text" class="w-full p-3 border border-gray-300 rounded-lg" id="username">
+        <div *ngIf="username?.invalid && (username?.dirty || username?.touched)" class="text-red-500 text-sm">
+          <div *ngIf="username?.errors?.['required']">El Username es requerido.</div>
+        </div>
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium">Password</label>
+        <input formControlName="password" type="password" class="w-full p-3 border border-gray-300 rounded-lg" id="password">
+        <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="text-red-500 text-sm">
+          <div *ngIf="password?.errors?.['required']">El Password es requerido.</div>
+        </div>
+      </div>
+
+      <button type="submit" (click)="login()" class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-700">Iniciar Sesión</button>
+    </form>
+  </div>
+</div>
