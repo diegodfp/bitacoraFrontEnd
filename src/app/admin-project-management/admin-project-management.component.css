@@ -1,0 +1,26 @@
+.card {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card h3 {
+    color: #333;
+  }
+  
+  .card p {
+    margin-top: 0.5rem;
+  }
+  
+  .card button {
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  .card button i {
+    font-size: 1.25rem;
+  }
+  

@@ -40,10 +40,11 @@ export class LoginComponent {
       this.loginError = "";
       this.loginService.login(this.loginForm.value as LoginRequest).subscribe({
         next: (userData) => {
+          console.log('Inicio de sesión exitoso', userData);
           if (userData.role === 'ADMIN') {
-            this.router.navigateByUrl('/inicio');
+            this.router.navigateByUrl('/admin-dashboard');  // Redirige al dashboard del administrador
           } else {
-            this.router.navigateByUrl('/inicio-user');
+            this.router.navigateByUrl('/user-dashboard');   // Redirige al dashboard del usuario
           }
           this.loginForm.reset();
         },

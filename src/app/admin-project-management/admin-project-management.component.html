@@ -1,0 +1,93 @@
+<!-- Lista de Proyectos -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let project of projects" class="card p-4 shadow-lg bg-white rounded-lg">
+      <h3 class="text-lg font-semibold">{{ project.projectName }}</h3>
+      <p class="text-sm text-gray-600">{{ project.description }}</p>
+      <p class="text-xs text-gray-500">Fecha de Inicio: {{ project.startDate | date }}</p>
+      <p class="text-xs text-gray-500">Fecha de Fin: {{ project.endDate | date }}</p>
+  
+      <!-- CRUD Icons -->
+      <div class="flex justify-end space-x-2 mt-4">
+        <button class="text-blue-500" (click)="editProject(project)">
+          <i class="fas fa-edit"></i> Editar
+        </button>
+        <button class="text-red-500" (click)="confirmDeleteProject(project)">
+          <i class="fas fa-trash-alt"></i> Eliminar
+        </button>
+        <button class="text-green-500" (click)="viewProjectDetails(project.projectId)">
+          <i class="fas fa-user-plus"></i> Asignar Usuario
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Popup de Edición -->
+  <div *ngIf="isEditPopupVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <h2 class="text-xl font-semibold mb-4">Editar Proyecto</h2>
+      
+      <form (ngSubmit)="updateProject()">
+        <div class="mb-4">
+          <label for="projectName" class="block text-gray-700">Nombre del Proyecto</label>
+          <input id="projectName" [(ngModel)]="selectedProject.projectName" name="projectName" class="w-full p-2 border rounded">
+        </div>
+        <div class="mb-4">
+          <label for="description" class="block text-gray-700">Descripción</label>
+          <input id="description" [(ngModel)]="selectedProject.description" name="description" class="w-full p-2 border rounded">
+        </div>
+        <div class="mb-4">
+          <label for="startDate" class="block text-gray-700">Fecha de Inicio</label>
+          <input id="startDate" type="date" [(ngModel)]="selectedProject.startDate" name="startDate" class="w-full p-2 border rounded">
+        </div>
+        <div class="mb-4">
+          <label for="endDate" class="block text-gray-700">Fecha de Fin</label>
+          <input id="endDate" type="date" [(ngModel)]="selectedProject.endDate" name="endDate" class="w-full p-2 border rounded">
+        </div>
+        
+        <div class="flex justify-end">
+          <button type="button" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2" (click)="closeEditPopup()">Cancelar</button>
+          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Actualizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Popup de Confirmación para Eliminar -->
+  <div *ngIf="isDeletePopupVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <h2 class="text-xl font-semibold mb-4">Eliminar Proyecto</h2>
+      <p>¿Estás seguro de que deseas eliminar este proyecto?</p>
+      
+      <div class="flex justify-end mt-4">
+        <button class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2" (click)="closeDeletePopup()">Cancelar</button>
+        <button class="bg-red-500 text-white px-4 py-2 rounded" (click)="deleteProject()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Popup de Asignación de Usuarios -->
+  <div *ngIf="isAssignUserPopupVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <h2 class="text-xl font-semibold mb-4">Asignar Usuario al Proyecto</h2>
+      
+      <form (ngSubmit)="assignUserToProject()">
+        <div class="mb-4">
+          <label for="userId" class="block text-gray-700">ID del Usuario</label>
+          <input id="userId" [(ngModel)]="assignment.userId" name="userId" class="w-full p-2 border rounded">
+        </div>
+        <div class="mb-4">
+          <label for="isLeader" class="block text-gray-700">¿Es Líder?</label>
+          <select id="isLeader" [(ngModel)]="assignment.isLeader" name="isLeader" class="w-full p-2 border rounded">
+            <option [value]="0">No</option>
+            <option [value]="1">Sí</option>
+          </select>
+        </div>
+  
+        <div class="flex justify-end">
+          <button type="button" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2" (click)="closeAssignUserPopup()">Cancelar</button>
+          <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Asignar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
