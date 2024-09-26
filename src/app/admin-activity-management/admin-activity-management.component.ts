@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ProjectDTO } from '../models/project.model'; // Define tu modelo para los proyectos
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';  // Importa CommonModule para usar el pipe 'date'
 import { FormsModule } from '@angular/forms'; 
@@ -11,6 +10,11 @@ import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';  
 import { ActivityDTO } from '../models/activity.model';
 import { ActivityStatusService } from '../services/activity-status.service';
+import { ProjectService } from '../services/project.service';
+import { ProjectDTO } from '../models/project.model';
+import { PriorityService } from '../services/priority.service';
+import { ActivityTypeService } from '../services/activity-type.service';
+
 
 @Component({
   selector: 'app-admin-activity-management',
@@ -21,16 +25,37 @@ import { ActivityStatusService } from '../services/activity-status.service';
 })
 export class AdminActivityManagementComponent implements OnInit {
 
+  
   activities: ActivityDTO[] = [];  // Lista de actividades
   selectedActivity: ActivityDTO = {} as ActivityDTO;  // Actividad seleccionada para edición/eliminación
   isEditPopupVisible = false;  // Control para mostrar el popup de edición
   isDeletePopupVisible = false;  // Control para mostrar el popup de eliminación
   isUpdateStatusPopupVisible = false;  // Control para mostrar el popup de actualización de estado
+  isCreatePopupVisible = false;
   statuses: any[] = [];
+  projects: ProjectDTO[] = [];  // Lista de proyectos
+  priorities: any[] = [];
+  activityTypes: any[] = [];
 
+// Almacenar el ID del usuario desde la sesión
+userId: number = 0;
+
+// Inicialización de la nueva actividad
+newActivity = { 
+  activityName: '', 
+  description: '', 
+  projectId: 0, 
+  priorityId: 0, 
+  activityTypeId: 0, 
+  activityStatusId: 0, 
+  createdByUserId: 0  // Este campo se llenará con el ID del usuario
+};  
   constructor(
     private http: HttpClient,
-    private activityStatusService: ActivityStatusService  // Inyecta el servicio de estados
+    private projectService: ProjectService, 
+    private activityStatusService: ActivityStatusService,  // Inyecta el servicio de estados
+    private priorityService: PriorityService,
+    private activityTypeService: ActivityTypeService,
   ){}
 
    // Datos para actualizar el estado de una actividad
@@ -41,8 +66,46 @@ export class AdminActivityManagementComponent implements OnInit {
   };
 
   ngOnInit(): void {
+
+    // Obtener el userId almacenado en sessionStorage
+    const storedUserId = sessionStorage.getItem("userId");
+    if (storedUserId) {
+      this.userId = parseInt(storedUserId);  // Convertir a número
+      this.newActivity.createdByUserId = this.userId;  // Asignar al nuevo objeto actividad
+    }
+
     this.getActivities();  // Cargar las actividades cuando se inicialice el componente
-    this.getStatuses();  // Cargar posibles estados (si es necesario)
+    this.getStatuses();
+    this.getProjects();
+    this.getPriorities();
+    this.getActivityTypes();
+  }
+
+   // Obtener todos los proyectos
+   getProjects(): void {
+    this.projectService.getProjects().subscribe(response => {
+      this.projects = response;
+    }, error => {
+      console.error('Error al obtener los proyectos', error);
+    });
+  }
+
+  // Obtener todas las prioridades
+  getPriorities(): void {
+    this.priorityService.getPriorities().subscribe(response => {
+      this.priorities = response;
+    }, error => {
+      console.error('Error al obtener las prioridades', error);
+    });
+  }
+
+  // Obtener todos los tipos de actividad
+  getActivityTypes(): void {
+    this.activityTypeService.getActivityTypes().subscribe(response => {
+      this.activityTypes = response;
+    }, error => {
+      console.error('Error al obtener los tipos de actividad', error);
+    });
   }
 
    // Obtener todos los estados de actividad
@@ -156,6 +219,33 @@ export class AdminActivityManagementComponent implements OnInit {
         this.closeDeletePopup();  // Cerrar el popup de eliminación
       }, error => {
         console.error('Error al eliminar la actividad', error);
+      });
+  }
+
+  //
+   // Mostrar popup de creación de actividad
+   openCreatePopup(): void {
+    this.isCreatePopupVisible = true;
+  }
+
+  // Cerrar popup de creación
+  closeCreatePopup(): void {
+    this.isCreatePopupVisible = false;
+  }
+
+  // Crear nueva actividad
+  createActivity(): void {
+    const createUrl = 'http://localhost:8080/activities/create';
+    
+    // Asegurarse de que `createdByUserId` está establecido antes de enviar
+    this.newActivity.createdByUserId = this.userId;
+    
+    this.http.post(createUrl, this.newActivity)
+      .subscribe(() => {
+        this.getActivities();  // Refrescar la lista de actividades
+        this.closeCreatePopup();  // Cerrar el popup
+      }, error => {
+        console.error('Error al crear la actividad', error);
       });
   }
 }
