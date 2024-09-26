@@ -18,6 +18,10 @@ export class ProjectService {
     );
 }
 
+createProject(projectData: any): Observable<any> {
+  return this.http.post('/projects/create', projectData);
+}
+
   // Actualizar un proyecto
   updateProject(id: number, projectData: any) {
     return this.http.put(`/projects/update/${id}`, projectData);

@@ -24,11 +24,21 @@ export class AdminProjectManagementComponent implements OnInit {
   isEditPopupVisible = false; // Control para mostrar el popup de edición
   isDeletePopupVisible = false; // Control para mostrar el popup de eliminación
   isAssignUserPopupVisible = false; // Control para mostrar el popup de asignación de usuarios
-
+  isCreatePopupVisible = false;
   // LISTAS PARA ASIGNAR USUARIOS A PROYECTO
   departments: any[] = [];  // Lista de departamentos
   users: any[] = [];  // Lista de usuarios filtrados por departamento
   selectedDepartmentId: number | null = null;  // Departamento seleccionado
+
+
+  // Datos para crear el departamento
+  newProject = {
+    projectName: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    departmentId: 0
+  };
 
   constructor(private http: HttpClient, private router: Router, private departmentService: DepartmentService, 
     private userService: UserService , private snackBar: MatSnackBar) {}
@@ -144,5 +154,27 @@ export class AdminProjectManagementComponent implements OnInit {
         this.users = users;
       });
     }
+  }
+
+  // Mostrar popup de creación de actividad
+  openCreatePopup(): void {
+    this.isCreatePopupVisible = true;
+  }
+
+  // Cerrar popup de creación
+  closeCreatePopup(): void {
+    this.isCreatePopupVisible = false;
+  }
+
+  // Método para crear un nuevo proyecto
+  createProject(): void {
+    const createUrl = 'http://localhost:8080/projects/create';
+    this.http.post(createUrl, this.newProject)
+      .subscribe(() => {
+        this.getProjects();  // Actualizar la lista de proyectos después de crear
+        this.closeCreatePopup();  // Cerrar el popup de creación
+      }, error => {
+        console.error('Error al crear el proyecto', error);
+      });
   }
 }

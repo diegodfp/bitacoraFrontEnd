@@ -1,0 +1,27 @@
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let activity of activities" class="card p-4 shadow-lg bg-white rounded-lg">
+      <h3 class="text-lg font-semibold">{{ activity.activityName }}</h3>
+      <p class="text-sm text-gray-600">{{ activity.description }}</p>
+      <p class="text-xs text-gray-500">Tipo de Actividad: {{ activity.activityTypeName }}</p>
+      <p class="text-xs text-gray-500">Estado: {{ activity.activityStatusName }}</p>
+      <p class="text-xs text-gray-500">Prioridad: {{ activity.priorityLevel }}</p>
+      <p class="text-xs text-gray-500">Fecha de Creación: {{ activity.createdAt | date }}</p>
+  
+      <!-- Botón para iniciar actividad -->
+      <button 
+        (click)="startActivity(activity.activityId, activity.projectId)" 
+        class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+        [disabled]="isActivityInProgress && currentActivityId !== activity.activityId">
+        <i class="fas fa-play"></i> Iniciar
+      </button>
+  
+      <!-- Botón para pausar actividad -->
+      <button 
+        (click)="pauseActivity(activity.activityId, activity.projectId)" 
+        class="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        [disabled]="!isActivityInProgress || currentActivityId !== activity.activityId">
+        <i class="fas fa-pause"></i> Pausar
+      </button>
+    </div>
+  </div>
+  

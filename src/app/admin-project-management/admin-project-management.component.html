@@ -1,5 +1,9 @@
 <!-- Lista de Proyectos -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="card p-4 shadow-lg bg-white rounded-lg flex justify-center items-center cursor-pointer"
+        (click)="openCreatePopup()">
+        <i class="fas fa-plus-circle text-6xl text-blue-500"></i>
+    </div>
     <div *ngFor="let project of projects" class="card p-4 shadow-lg bg-white rounded-lg">
         <h3 class="text-lg font-semibold">{{ project.projectName }}</h3>
         <p class="text-sm text-gray-600">{{ project.description }}</p>
@@ -115,3 +119,38 @@
         </form>
     </div>
 </div>
+
+<!-- Popup de Creación de Proyecto -->
+<div *ngIf="isCreatePopupVisible" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+      <h2 class="text-xl font-semibold mb-4">Crear Nuevo Proyecto</h2>
+      <form (ngSubmit)="createProject()">
+        <div class="mb-4">
+          <label for="projectName" class="block text-gray-700">Nombre del Proyecto</label>
+          <input id="projectName" [(ngModel)]="newProject.projectName" name="projectName" class="w-full p-2 border rounded">
+        </div>
+        <div class="mb-4">
+          <label for="description" class="block text-gray-700">Descripción</label>
+          <textarea id="description" [(ngModel)]="newProject.description" name="description" class="w-full p-2 border rounded"></textarea>
+        </div>
+        <div class="mb-4">
+          <label for="startDate" class="block text-gray-700">Fecha de Inicio</label>
+          <input id="startDate" type="date" [(ngModel)]="newProject.startDate" name="startDate" class="w-full p-2 border rounded">
+        </div>
+        <div class="mb-4">
+          <label for="endDate" class="block text-gray-700">Fecha de Fin</label>
+          <input id="endDate" type="date" [(ngModel)]="newProject.endDate" name="endDate" class="w-full p-2 border rounded">
+        </div>
+        <div class="mb-4">
+          <label for="departmentId" class="block text-gray-700">Departamento</label>
+          <select id="departmentId" [(ngModel)]="newProject.departmentId" name="departmentId" class="w-full p-2 border rounded">
+            <option *ngFor="let department of departments" [value]="department.departmentId">{{ department.departmentName }}</option>
+          </select>
+        </div>
+        <div class="flex justify-end">
+          <button type="button" class="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2" (click)="closeCreatePopup()">Cancelar</button>
+          <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Crear</button>
+        </div>
+      </form>
+    </div>
+  </div>
